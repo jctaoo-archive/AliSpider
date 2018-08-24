@@ -1,0 +1,6 @@
+pirce      http://mdskip.taobao.com/core/initItemDetail.htm?itemId={}   defaultModel.itemPriceResultDO.priceInfo.*.promotionList.price (+Refer)(min --> max)
+type       https://detail.tmall.com/item.htm?id={}   textarea.text() (it's html) .shopkeeper > div > a .attr("href")
+brand      https://detail.tmall.com/item.htm?id={}   TShop.setup().itemDO.brand
+imgae      https://detail.tmall.com/item.htm?id={}   TShop.setup().propertyPics.default
+title      https://detail.tmall.com/item.htm?id={}   TShop.setup().itemDO.title
+wangwang   https://detail.tmall.com/item.htm?id={}   .slogo-shopname > strong .text()

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>login</title>
+</head>
+
+<body>
+    <input type="text" name="name" />
+    <input type="password" name="pass">
+    <button type="submit">login</button>
+    <script src="./jquery-3.3.1.js"></script>
+    <script>
+        const {
+            ipcRenderer
+        } = require("electron")
+        const HOST = "http://192.168.0.7:20205"
+
+        $(document).ready(function () {
+            $("button").on("click", function () {
+                let name = $("input[name='name']").val()
+                let pass = $("input[name='pass']").val()
+                fetch(HOST + '/login', {
+                    method: 'POST',
+                    headers: new Headers({
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }),
+                    body: new URLSearchParams([
+                        ["name", name],
+                        ["pass", pass]
+                    ]).toString()
+                }).then((res) => {
+                    res.text().then((data) => {
+                        let real_data = JSON.parse(data);
+                        console.log(real_data)
+                        if (real_data.state == 0 && real_data.isRoot) {
+                            ipcRenderer.send("create-home", true)
+                        } else if (real_data.state == 0 && !real_data.isRoot) {
+                            ipcRenderer.send("create-user", true)
+                        } else if (real_data.state == 1) {
+                            ipcRenderer.send("attacher", true)
+                        }
+                    })
+                })
+            })
+        })
+    </script>
+</body>
+
+</html>

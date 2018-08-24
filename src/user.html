@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>数据提取数据库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .top-button-item {
+            display: inline-block;
+            background-color: rgb(173, 213, 231);
+            width: 100px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            user-select: none;
+        }
+
+        .top-button>.slect {
+            background-color: rgb(132, 193, 221);
+        }
+
+        .content-item {
+            display: flex;
+        }
+
+        .item-left {
+            flex-grow: .1;
+            border: solid 1px rgb(81, 114, 206);
+        }
+
+        .item-right {
+            flex-grow: 9.9;
+            border: solid 1px rgb(238, 24, 24);
+        }
+
+        .button-bar {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 99px;
+        }
+
+        .line-1 {
+            display: flex;
+            justify-content: space-between;
+            height: 40px;
+        }
+
+        .line-2 {
+            display: flex;
+            justify-content: space-between;
+            height: 40px;
+        }
+
+        .line-2>.tiqu {
+            flex-grow: 1;
+        }
+
+        .line-1-a {
+            display: flex;
+            justify-content: space-between;
+            height: 50px;
+            width: 100%;
+        }
+
+        .line-2-a {
+            display: flex;
+            justify-content: space-around;
+            height: 50px;
+            width: 100%;
+        }
+
+        .title {
+            flex-grow: 1;
+        }
+
+        .info {
+            flex-grow: 800;
+        }
+        .zuhe {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            height: 50px    ;
+        }
+        .item-right input {
+            font-size: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-button">
+        <a class="top-button-item slect">数据纠错</a>
+    </div>
+    <div class="content">
+        <div class="content-item slect">
+            <div class="item-left">
+                <div class="table" style="overflow:scroll;">
+                    <table class="shujujiucuo" border="1" cellspacing="0" cellpadding="7">
+                        <tr>
+                            <th style="width: 60px">序号</th>
+                            <th style="width: 140px">s蓝色d红色</th>
+                            <th style="width: 50px">提示</th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="button-bar">
+                    <div class="line-1">
+                        <div class="fenlei"></div>
+                        <input type="number" class="shuliang-input" name="shuliang" min="1" max="200" value="20" style="width: 125px;" />
+                    </div>
+                    <div class="line-2">
+                        <button class="tiqu">提取</button>
+                    </div>
+                </div>
+            </div>
+            <div class="item-right">
+                <div class="line-1-a">
+                        <input type="text" class="title" readonly value="" />
+                </div>
+                <div class="line-2-a">
+                        <input type="text" class="info" readonly value="" />
+                        <div class="zuhe">
+                            <input class="search" value=""/>
+                            <button class="baidu">百度</button>
+                        </div>
+                </div>
+                <div class="img_or_baidu"style="overflow:scroll;">
+                    <!-----wait to load------->
+                </div>
+            </div>
+        </div>
+        <script src="./jquery-3.3.1.js"></script>
+        <script>
+            const HOST = "http://192.168.0.7:20205"
+            let tiquedData
+            const D_CODE = 100
+            const S_CODE = 115
+            const userdo = 7
+            const addElementOfTable = (required_data, table_slector, fuck, trClickFn) => {
+                let tr = $("<tr>");
+                Object.keys(required_data).map((keyItem, keyIndex) => {
+                    let td = $("<td>");
+                    if (fuck && keyIndex == 0) { // fuck means that wether you should checkbox in the first children element
+                        // of 'tr' named 'td' or not
+                        $("<input>").attr("type", "checkbox").addClass("shujupaicha_checkbox").css(
+                            "float", "left").appendTo(td);
+                    }
+                    $("<div>").text(required_data[keyItem]).css("float", "left").appendTo(td);
+                    td.appendTo(tr);
+                });
+                tr.on("click", function(event) {
+                    trClickFn(event, $(this))
+                })
+                tr.addClass("rdtr").appendTo($(table_slector));
+            }
+
+            const beginFunction = () => {   
+                fetch(HOST + "/help/get-type?isSelector=true").then((res) => {
+                    res.text().then((data) => {
+                        let real_data = JSON.parse(data).data;
+                        $(real_data).addClass("fenlei-input").css("width", "125px").
+                        css("height", "40px").appendTo(".fenlei");
+                    })
+                });
+            }
+            
+            let selectedDataId;
+            let selectedTr;
+            const eachTrClick = (event, JqElement) => {
+                // clear '.item-right'
+                $(".title").val("")
+                $(".info").val("")
+                $(".search").val("")
+                $(".img_or_baidu").empty()
+
+                let trIndex = $("tr").index(JqElement)
+                let this_tiquedDataItem = tiquedData[trIndex - 1]
+                selectedDataId = this_tiquedDataItem.baoid
+                selectedTr = $(JqElement)
+                $(".title").val(this_tiquedDataItem.title)
+                let brand = this_tiquedDataItem.brand ? this_tiquedDataItem.brand : "其它"
+                let wangwang = this_tiquedDataItem.wangwang
+                let type = this_tiquedDataItem.type
+                let infoStr = `品牌:${brand}       旺旺:${wangwang}       类目:${type}`
+                $(".info").val(infoStr)
+                $(".search").val(brand)
+                
+                // load image
+                this_tiquedDataItem.image.split("$-$").map(imageUrlItem => {
+                    $("<img>").attr("src", imageUrlItem).appendTo($(".img_or_baidu"))
+                })
+            }
+
+            $(document).ready(function () {
+                beginFunction()
+
+                let windowHeight = $(window).height();
+                $(".content-item").css("height", windowHeight - 50 + "px");
+                $(".item-left > .table").css("height", windowHeight - 150 + "px");
+                $(".img_or_baidu").css("height", windowHeight - 150 + "px");
+                $(window).resize(function () {
+                    let windowHeight = $(window).height();
+                    $(".content-item").css("height", windowHeight - 50 + "px");
+                    $(".item-left > .table ").css("height", windowHeight - 150 + "px");
+                    $(".img_or_baidu").css("height", windowHeight - 150 + "px");
+                    $("iframe").css("height", windowHeight - 150 + "px");
+                });
+                
+                $(".baidu").on("click", function () {
+                    // clear '.image_or_baidu'
+                    $(".img_or_baidu").empty()
+                    $("<iframe>").css("height", windowHeight - 150 + "px").css("width", "90%").
+                        attr("src", "https://www.baidu.com/s?wd=" + $(".search").val()).appendTo($(".img_or_baidu"))
+                })
+
+                $(".tiqu").on("click", function () {
+                    // clear table
+                    $(".rdtr").remove()
+                    // clear '.item-right'
+                    $(".title").val("")
+                    $(".info").val("")
+                    $(".search").val("")
+                    $(".img_or_baidu").empty()
+                
+                    let dataCount = $(".shuliang-input").val()
+                    let name = "*"
+                    let type = $(".fenlei-input").val()
+                    if (type == "all") {
+                        type = "*"
+                    }
+                    fetch(HOST + '/fiflter-data-no-isok', {
+                        method: 'POST',
+                        headers: new Headers({
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }),
+                        body: new URLSearchParams([
+                            ["name", name],
+                            ["type", type],
+                            ["dataCount", dataCount]
+                        ]).toString()
+                    }).then((res) => {
+                        res.text().then((data) => {
+                            let real_data = JSON.parse(data).data;
+                            tiquedData = real_data
+                            real_data.map((dataItem, index) => {
+                                let required_data = {
+                                    id: index + 1,
+                                    baoid: dataItem.baoid,
+                                    mark: ""
+                                };
+                                addElementOfTable(required_data,
+                                    ".shujujiucuo", false, eachTrClick)
+                            });
+                        });
+                    });
+                })
+
+                $(document).on("keypress", function(event) {
+                    if (selectedDataId) {
+                        if (event.keyCode == D_CODE) {
+                            fetch(HOST + '/do-work', {
+                                method: 'POST',
+                                headers: new Headers({
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                }),
+                                body: new URLSearchParams([
+                                    ["dataId", selectedDataId],
+                                    ["isok", 1],
+                                    ["userdo", userdo]
+                            ]).toString()
+                            }).then((res) => {
+                                res.text().then((data) => {
+                                });
+                            });
+                            selectedTr.css("background-color", "#f50f0f")
+                        } else if (event.keyCode == S_CODE) {
+                            fetch(HOST + '/do-work', {
+                                method: 'POST',
+                                headers: new Headers({
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                }),
+                                body: new URLSearchParams([
+                                    ["dataId", selectedDataId],
+                                    ["isok", 0],
+                                    ["userdo", userdo]
+                            ]).toString()
+                            }).then((res) => {
+                                res.text().then((data) => {
+                                });
+                            });
+                            selectedTr.css("background-color", "#53a9f3")
+                        }
+                    }
+                })
+
+            })
+        </script>
+</body>
+
+</html>

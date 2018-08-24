@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>采集数据库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .content-item {
+            display: none;
+        }
+
+        .content>.slect {
+            display: block;
+        }
+
+        .top-button-item {
+            display: inline-block;
+            background-color: rgb(173, 213, 231);
+            width: 100px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            user-select: none;
+        }
+
+        .top-button>.slect {
+            background-color: rgb(132, 193, 221);
+        }
+
+        .content>.content-item>.table {
+            width: 100%;
+            border: solid 1px rgb(138, 130, 130);
+            margin: 5px;
+        }
+
+        .content>.content-item>.button-bar>button {
+            /* width: 120px; */
+            height: 60px;
+        }
+
+        .content>.content-item>.button-bar {
+            display: flex;
+            justify-content: space-around;
+            height: 80px;
+            align-items: center;
+        }
+
+        .content>.content-item>.button-bar-1 button {
+            /* width: 120px; */
+            height: 30px;
+        }
+
+        .button-bar-1>div {
+            width: 760px;
+        }
+
+        .button-bar-1>div>div {
+            display: flex;
+            justify-content: space-around;
+            height: 40px;
+            align-items: center;
+        }
+
+        .content>.content-item>.button-bar-2 button {
+            /* width: 120px; */
+            height: 55px;
+            width: 180px;
+        }
+
+        .button-bar-2>div>div {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .button-bar-2>div {
+            width: 560px;
+        }
+
+        .lalala {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .shujupaicha_checkbox {
+            display: block;
+            height: 20px;
+            width: 20px;
+            -webkit-appearance: none;
+            border: solid .7px rgb(85, 85, 85);
+        }
+
+        .shujupaicha_checkbox_checked {
+            background-color: rgb(27, 248, 64);
+        }
+
+        td>div {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .data-td {
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main-space">
+        <div class="top-button">
+            <a class="top-button-item slect">数据添加</a>
+            <a class="top-button-item">数据提取</a>
+            <a class="top-button-item">纠错日志</a>
+            <a class="top-button-item">判断重复</a>
+            <a class="top-button-item">系统管理</a>
+            <a class="top-button-item">数据排查</a>
+        </div>
+        <div class="content">
+            <div class="content-item slect">
+                <div class="table" style="overflow:scroll;">
+                    <table class="daoru-table" border="1" cellspacing="0" cellpadding="7">
+                        <tr>
+                            <th style="width: 100px">序号</th>
+                            <th style="width: 220px">ID</th>
+                            <th style="width: 180px">标题</th>
+                            <th style="width: 220px">类目</th>
+                            <th style="width: 140px">价格</th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="button-bar">
+                    <button class="daoru" style="width: 150px">导入</button>
+                    <button class="save" style="width: 150px">存入</button>
+                </div>
+            </div>
+            <div class="content-item">
+                <div class="table" style="overflow:scroll;">
+                    <table class="shujutiqu" border="1" cellspacing="0" cellpadding="7">
+                        <tr>
+                            <th style="width: 100px">序号</th>
+                            <th style="width: 220px">ID</th>
+                            <th style="width: 180px">用户</th>
+                            <th style="width: 220px">次数</th>
+                            <th style="width: 140px">分类</th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="button-bar-1">
+                    <div style="margin-left: 13px">
+                        <div style="height: 40px">
+                            <div class="fenlei" style="float: left;">
+                                分类：
+                                <!-------------wait to 动态加载---------------->
+                            </div>
+                            <div class="cishu">
+                                次数： 
+                                <select class="cishu-select" style="height: 30px">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                            <div class="jindu" style="float: left;">
+                                进度：
+                                <progress class="tiqujindu" value="0" max="100" style="width:240px;">
+                                </progress>
+                            </div>
+                        </div>
+                        <div style="height: 40px">
+                            <div class="yuangong" style="float: left;">
+                                员工：
+                                <!-------------wait to 动态加载---------------->
+                            </div>
+                            <div class="shuliang" style="float: left;">
+                                数量：
+                                <input type="number" class="shuliang-input" name="shuliang" min="1" max="200" value="20" style="height: 30px; width: 84px;"
+                                />
+                            </div>
+                            <button class="tiqu" style="width: 100px">提取</button>
+                        </div>
+                    </div>
+                    <button class="baocun" style="    
+                        position: absolute;
+                        right: 10px;
+                        bottom: 10px;
+                        height: 80px;
+                        width: 80px;">保存</button>
+                </div>
+            </div>
+            <div class="content-item">
+                <div class="table" style="overflow:scroll;">
+                    <table class="jiucuorizhi" border="1" cellspacing="0" cellpadding="7">
+                        <tr>
+                            <th style="width: 100px">序号</th>
+                            <th style="width: 120px">用户</th>
+                            <th style="width: 120px">符合数据</th>
+                            <th style="width: 120px">总数据</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="content-item">
+                <div class="table" style="overflow:scroll;">
+                    <table border="1" cellspacing="0" cellpadding="7">
+                        <tr>
+                            <th style="width: 100px">序号</th>
+                            <th style="width: 220px">ID</th>
+                            <th style="width: 120px">是否重复</th>
+                            <th style="width: 220px">提示</th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="button-bar-2">
+                    <div style="margin-left: 13px">
+                        <div style="height: 65px;">
+                            <button class="daoru">导入</button>
+                            <button class="kaishipanduan">开始判断</button>
+                            <button class="daochu">导出</button>
+                        </div>
+                        <div style="height: 15px;">
+                            <p class="tishi">提示：过滤重复之前，请加载右边数据！</p>
+                        </div>
+                    </div>
+                    <a class="baocun" style="    position: absolute;
+                        right: 17px;
+                        bottom: 35px;" href="#">共0条，重新加载</a>
+                </div>
+            </div>
+            <div class="content-item">
+                <div class="add-yuangong" style="margin-left: 13px">
+                    <p style="    position: relative;
+                    top: 10px;
+                    background-color: white;
+                    left: 30px;
+                    display: inline;
+                    padding: 5px;">员工添加</p>
+                    <div style="    border: solid 1px #e0b4b4;
+                    width: 378px;
+                    height: 189px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;">
+                        <div class="add-yg-content">
+                            账号：
+                            <input type="text">
+                            <br> 密码：
+                            <input type="password">
+                            <br>
+                            <button class="add-yg-btn">添加</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-guanli" style="margin-left: 13px">
+                    <p style="    position: relative;
+                        top: 10px;
+                        background-color: white;
+                        left: 30px;
+                        display: inline;
+                        padding: 5px;">数据管理</p>
+                    <div style="    border: solid 1px #e0b4b4;
+                        width: 378px;
+                        height: 189px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;">
+                        <div class="data-gl-content">
+                            剩余纠错数据：
+                            <p style="color: red">0</p>
+                            已提待纠数据:
+                            <p style="color: red">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-item">
+                <div class="table" style="width:79%;float:left;overflow:scroll;">
+                    <table class="paichabiao" border="1" cellspacing="0" cellpadding="7">
+                        <tr>
+                            <th style="width: 100px">序号</th>
+                            <th style="width: 220px">ID</th>
+                            <th style="width: 220px">标题</th>
+                            <th style="width: 180px">用户</th>
+                            <th style="width: 140px">次数</th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="lalala" style="float: left;width: 19%;">
+                    <button class="quanxuan" style="height: 50px">全选</button>
+                    <textarea name="neirong" rows="10" style="resize:none;flex-grow: 1;"></textarea>
+                    <button class="chaxun" style="height: 50px">查询</button>
+                    <button class="shanchu" style="height: 50px">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./jquery-3.3.1.js"></script>
+    <script>
+        //----------------------------the load to begin this page-----------------------------
+        const {
+            ipcRenderer
+        } = require("electron")
+        const HOST = "http://192.168.0.7:20205"
+        const typeStr = "";
+        const users = {};
+        let lastId;
+
+        const beginFunction = () => {
+            fetch(HOST + "/help/get-type?isSelector=true").then((res) => {
+                res.text().then((data) => {
+                    let real_data = JSON.parse(data).data;
+                    $(real_data).addClass("fenlei-input").css("width", "240px").css("height",
+                        "30px").appendTo(".fenlei");
+                })
+            });
+
+            fetch(HOST + "/help/get-user?isSelector=true").then((res) => {
+                res.text().then((data) => {
+                    let real_data = JSON.parse(data).data;
+                    $(real_data).addClass("yuangong-input").css("width", "84px").css("height",
+                        "30px").appendTo(".yuangong");
+                })
+            })
+
+            fetch(HOST + "/help/get-user").then((res) => {
+                res.text().then((data) => {
+                    let real_data = JSON.parse(data).data;
+                    real_data.map(userItem => {
+                        users[userItem.id] = userItem.name;
+                    });
+                })
+            })
+        }
+
+
+
+
+        //----------------------------the load to begin this page-----------------------------
+        const addElementOfTable = (required_data, table_slector, fuck, className, inputClick) => {
+            let tr = $("<tr>");
+            Object.keys(required_data).map((keyItem, keyIndex) => {
+                let td = $("<td>");
+                if (fuck && keyIndex == 0 && inputClick) { // fuck means that wether you should checkbox in the first children element
+                    // of 'tr' named 'td' or not
+                    td.css("display", "flex")
+                    $("<input>").attr("type", "checkbox").addClass("shujupaicha_checkbox").on("click",
+                        function (event) {
+                            inputClick(event, $(this))
+                        }).appendTo(td);
+                }
+                $("<div>").text(required_data[keyItem]).appendTo(td);
+                td.addClass("data-td").appendTo(tr);
+            });
+            if (className) {
+                tr.addClass(className)
+            }
+            tr.appendTo($(table_slector));
+        }
+
+        const loadSta = () => {
+            fetch(HOST + '/get-sta', {
+                    method: 'POST'
+                })
+                .then((res) => {
+                    res.text().then((data) => {
+                        document.getElementsByClassName("data-gl-content")[0].children[0].innerHTML =
+                            JSON.parse(data).data[0];
+                        document.getElementsByClassName("data-gl-content")[0].children[1].innerHTML =
+                            JSON.parse(data).data[1];
+                    });
+                });
+        }
+
+        $(document).ready(() => {
+            beginFunction()
+
+            let windowHeight = $(window).height();
+            $(".content > .content-item > .table").css("height", windowHeight - 150 + "px");
+            $(".lalala").css("height", windowHeight - 150 + "px");
+
+            const inputClickF = (event, JqElement) => {
+                event.preventDefault()
+                let isAllUnChecked = true
+                if (!JqElement.hasClass("shujupaicha_checkbox_checked")) {
+                    JqElement.addClass("shujupaicha_checkbox_checked")
+                } else {
+                    JqElement.removeClass("shujupaicha_checkbox_checked")
+                }
+                $(".shujupaicha_checkbox").each(function () {
+                    let isChecked = $(this).hasClass("shujupaicha_checkbox_checked")
+                    if (isChecked) {
+                        isAllUnChecked = false
+                    }
+                })
+                if (isAllUnChecked) {
+                    $(".quanxuan").text("全选")
+                } else {
+                    $(".quanxuan").text("反选")
+                }
+            }
+            $(".quanxuan").on("click", function () {
+                if ($(this).text() == "全选") {
+                    $(".shujupaicha_checkbox").each(function () {
+                        $(this).addClass("shujupaicha_checkbox_checked")
+                    })
+                    $(this).text("反选")
+                } else if ($(this).text() == "反选") {
+                    let isAllUnChecked = true
+                    $(".shujupaicha_checkbox").each(function () {
+                        let isChecked = $(this).hasClass("shujupaicha_checkbox_checked")
+                        if (!isChecked) {
+                            isAllUnChecked = false
+                        }
+                        if (!isChecked) {
+                            $(this).addClass("shujupaicha_checkbox_checked")
+                        } else {
+                            $(this).removeClass("shujupaicha_checkbox_checked")
+                        }
+                    })
+                    if (isAllUnChecked) {
+                        $(this).text("全选")
+                    }
+                }
+            })
+            $(".shanchu").on("click", function () {
+                $(".shujupaicha_checkbox_checked").each(function () {
+                    let id = $(this).parent("td").children("div").text()
+                    $(this).parent("td").parent("tr").remove()
+                    fetch(HOST + '/update-delete', {
+                            method: 'POST',
+                            headers: new Headers({
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }),
+                            body: new URLSearchParams([
+                                ["id", id]
+                            ]).toString()
+                    }).then((res) => {
+                            // pass
+                    })
+                })
+            })
+
+            $(".top-button-item").on("click", function () {
+                let index = $(".top-button-item").index(this);
+                let contentItem = $(".content-item").eq(index);
+                $(".slect").removeClass("slect");
+                $(this).addClass("slect");
+                $(contentItem).addClass("slect")
+
+                if ($(this).text() == "数据排查" && !$(this).hasClass("last")) {
+                    $(".pcb-tr").remove() // clear table
+                    fetch(HOST + '/get-all-data', {
+                            method: 'POST'
+                        })
+                        .then((res) => {
+                            res.text().then((data) => {
+                                let real_data = JSON.parse(data).data;
+                                real_data.map(dataItem => {
+                                    let required_data = {
+                                        id: dataItem.id,
+                                        baoid: dataItem.baoid,
+                                        title: dataItem.title,
+                                        name: dataItem.userdo ?
+                                            users[dataItem.userdo] : "",
+                                        count: dataItem.sc
+                                    };
+                                    addElementOfTable(required_data,
+                                        ".paichabiao",
+                                        true, "pcb-tr", inputClickF)
+                                });
+                            })
+                        })
+                }
+
+                if ($(this).text() == "纠错日志" && !$(this).hasClass("last")) {
+                    $(".jcb-tr").remove() // clear table
+                    fetch(HOST + '/get-work-log', {
+                            method: 'POST'
+                        })
+                        .then((res) => {
+                            res.text().then((data) => {
+                                let real_data = JSON.parse(data).data;
+                                Object.keys(real_data).map(keyItem => {
+                                    let required_data = {
+                                        userId: real_data[keyItem].userId,
+                                        name: keyItem,
+                                        okCount: real_data[keyItem].okCount,
+                                        count: real_data[keyItem].count
+                                    };
+                                    addElementOfTable(required_data,
+                                        ".jiucuorizhi", false, "jcb-tr");
+                                });
+                            })
+                        });
+                }
+
+                $(".last").removeClass("last") // clear last select element
+                $(this).addClass("last"); // records last item user selected
+            })
+
+            let import_data = [];
+            let imported_data = [];
+            $(".daoru").on("click", function () {
+                // get last id
+                fetch(HOST + "/help/get-last-id").then(res => {
+                    res.text().then(data => {
+                        let real_data = JSON.parse(data).data
+                        lastId = real_data
+                    })
+                })
+                // ---------------
+                ipcRenderer.send("import", true);
+                ipcRenderer.on("imported", (event, arg) => {
+                    import_data = arg
+                    ipcRenderer.on("imported-data", (event, arg) => {
+                        let url = arg[0]
+                        let where_id_in_url = url.match(/id=(.*?)&/);
+                        let id;
+                        if (where_id_in_url) {
+                            id = where_id_in_url[1]
+                        } else if (!where_id_in_url) {
+                            let idIndex = url.match(/id=(.*?)/).index
+                            id = url.substring(idIndex + 3, url.length)
+                        }
+                        let title = arg[1];
+                        let price = arg[2];
+                        let type = arg[3];
+                        let image = arg[4];
+                        let wangwang = arg[5];
+                        let brand = arg[6];
+                        lastId++;
+                        let tableDataId = lastId;
+                        let db_r_d = {
+                            baoid: id,
+                            title: title,
+                            type: type,
+                            price: price,
+                            image: image,
+                            wangwang: wangwang,
+                            brand: brand
+                        }
+                        let required_data = {
+                            tid: tableDataId,
+                            baoid: id,
+                            title: title,
+                            type: type,
+                            price: price
+                        };
+                        imported_data.push(db_r_d)
+                        addElementOfTable(required_data,
+                            ".daoru-table", false, "imp-tr", false)
+                    })
+                    import_data.map(dataItem => {
+                        if (dataItem !== "") {
+                            ipcRenderer.send("import-data", dataItem)
+                        }
+                    });
+                });
+            });
+            $(".save").on("click", function () {
+                if (imported_data.length == 0) {
+                    ipcRenderer.send("error-window", true)
+                } else {
+                    $(".imp-tr").remove() // clear table
+                    imported_data.map(importedDataItem => {
+                        fetch(HOST + '/add-data', {
+                            method: 'POST',
+                            headers: new Headers({
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }),
+                            body: new URLSearchParams([
+                                ["baoid", importedDataItem.baoid],
+                                ["title", importedDataItem.title],
+                                ["type", importedDataItem.type],
+                                ["price", importedDataItem.price],
+                                ["image", importedDataItem.image.join("$-$")],
+                                ["wangwang", importedDataItem.wangwang],
+                                ["brand", importedDataItem.brand]
+                            ]).toString()
+                        }).then((res) => {
+                            loadSta()
+                        })
+                    })
+                }
+            })
+
+            $(window).resize(function () {
+                let windowHeight = $(window).height();
+                $(".content > .content-item > .table").css("height", windowHeight - 150 + "px");
+                $(".lalala").css("height", windowHeight - 150 + "px");
+            });
+            loadSta()
+
+            let saveData = [];
+            $(".tiqu").on("click", function () {
+                $(".tqb-tr").remove() // clear table
+                let dataCount = $(".shuliang-input").val();
+                let type = $(".fenlei-input").val();
+                let name = $(".yuangong-input").children("option[value='" + $(".yuangong-input").val() +
+                    "']").text();
+                if (type == "all") {
+                    type = "*"
+                };
+                if (name == "全部") {
+                    name = "*"
+                };
+                let sc = $(".cishu-select").val()
+                fetch(HOST + '/fiflter-data', {
+                    method: 'POST',
+                    headers: new Headers({
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }),
+                    body: new URLSearchParams([
+                        ["name", name],
+                        ["type", type],
+                        ["sc", sc],
+                        ["dataCount", dataCount]
+                    ]).toString()
+                }).then((res) => {
+                    res.text().then((data) => {
+                        let real_data = JSON.parse(data).data;
+                        real_data.map(dataItem => {
+                            let required_data = {
+                                id: dataItem.id,
+                                baoid: dataItem.baoid,
+                                name: users[dataItem.userdo],
+                                count: dataItem.sc,
+                                type: dataItem.type
+                            };
+                            saveData.push(required_data);
+                            addElementOfTable(required_data,
+                                ".shujutiqu", false, "tqb-tr")
+                        });
+                    });
+                });
+            });
+
+            $(".baocun").on("click", function () {
+                if (saveData.length == 0) {
+                    ipcRenderer.send("save-file", false);
+                } else if (saveData.length != 0) {
+                    // lalalalalalla jindutiao jiada hahahah shencaozuo hahaha
+                    let intervalId = setInterval(() => {
+                        if ($(".tiqujindu").val() >= 100) {
+                            clearInterval(intervalId);
+                            $(".tiqujindu").val(0); // gui 0
+                        } else {
+                            $(".tiqujindu").val($(".tiqujindu").val() + 7);
+                        }
+                    }, 16);
+                    ipcRenderer.send("save-file", saveData);
+                    ipcRenderer.on("saved-data", () => {
+                        saveData.map(saveDataItem => {
+                            fetch(HOST + '/add-sc', {
+                                method: 'POST',
+                                headers: new Headers({
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                }),
+                                body: new URLSearchParams([
+                                    ["sc", saveDataItem.count + 1],
+                                    ["id", saveDataItem.id]
+                                ]).toString()
+                            }).then((res) => {
+                                // pass
+                            });
+                        })
+                    })
+                }
+            });
+
+            $(".add-yg-btn").on("click", function () {
+                let name = document.getElementsByClassName("add-yg-content")[0].children[0].value;
+                let pass = document.getElementsByClassName("add-yg-content")[0].children[2].value;
+                fetch(HOST + '/register', {
+                    method: 'POST',
+                    headers: new Headers({
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }),
+                    body: new URLSearchParams([
+                        ["name", name],
+                        ["pass", pass]
+                    ]).toString()
+                }).then((res) => {
+                    document.getElementsByClassName("add-yg-content")[0].children[0].value =
+                        "";
+                    document.getElementsByClassName("add-yg-content")[0].children[2].value =
+                        "";
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

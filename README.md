@@ -7,6 +7,8 @@
 > 爬取的应用程序，并提供持久存储功能，采用Mysql实现，并
 > 配有对应的服务端，可以实现已存储数据的过滤等操作
 
+![AliSpider](https://github.com/hello-acuario/AliSpider/blob/master/2018-08-15%20004311.png)
+
 ### AliSpider构造
 
 > 客户端：在项目的master分支下（采用Electron开发，网页采用Jquery）

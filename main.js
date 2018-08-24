@@ -129,9 +129,11 @@ ipcMain.on("import", function (event, arg) {
 })
 
 ipcMain.on("import-data", function (event, arg) {
-    get(arg, (title, price, type, image_urls, wangwang, brand) => {
-        event.sender.send("imported-data", [arg, title, price, type, image_urls, wangwang, brand])
-    })
+    setTimeout(function () {
+        get(arg, (title, price, type, image_urls, wangwang, brand) => {
+            event.sender.send("imported-data", [arg, title, price, type, image_urls, wangwang, brand])
+        })
+    }, 3000)
 })
 
 ipcMain.on("error-window", function (event, arg) {

@@ -220,7 +220,7 @@
             </div>
             <div class="content-item">
                 <div class="table" style="overflow:scroll;">
-                    <table border="1" cellspacing="0" cellpadding="7">
+                    <table border="1" class="sfcf-table" cellspacing="0" cellpadding="7">
                         <tr>
                             <th style="width: 100px">序号</th>
                             <th style="width: 220px">ID</th>
@@ -232,17 +232,11 @@
                 <div class="button-bar-2">
                     <div style="margin-left: 13px">
                         <div style="height: 65px;">
-                            <button class="daoru">导入</button>
+                            <button class="daoru_pdcf">导入</button>
                             <button class="kaishipanduan">开始判断</button>
                             <button class="daochu">导出</button>
                         </div>
-                        <div style="height: 15px;">
-                            <p class="tishi">提示：过滤重复之前，请加载右边数据！</p>
-                        </div>
                     </div>
-                    <a class="baocun" style="    position: absolute;
-                        right: 17px;
-                        bottom: 35px;" href="#">共0条，重新加载</a>
                 </div>
             </div>
             <div class="content-item">
@@ -321,6 +315,7 @@
         const HOST = "http://192.168.0.7:20205"
         const typeStr = "";
         const users = {};
+        let types;
         let lastId;
 
         const beginFunction = () => {
@@ -346,6 +341,13 @@
                     real_data.map(userItem => {
                         users[userItem.id] = userItem.name;
                     });
+                })
+            })
+
+            fetch(HOST + "/help/get-type").then((res) => {
+                res.text().then((data) => {
+                    let real_data = JSON.parse(data).data;
+                    types = real_data
                 })
             })
         }
@@ -569,9 +571,9 @@
                             ".daoru-table", false, "imp-tr", false)
                     })
                     import_data.map(dataItem => {
-                        if (dataItem !== "") {
-                            ipcRenderer.send("import-data", dataItem)
-                        }
+                            if (dataItem !== "") {
+                                ipcRenderer.send("import-data", dataItem)
+                            }
                     });
                 });
             });
@@ -599,6 +601,73 @@
                             loadSta()
                         })
                     })
+                }
+            })
+            
+            let pdDataId = [];
+            let pdSaveData = [];
+            $(".daoru_pdcf").on("click", function () {
+                ipcRenderer.send("import", true)
+                ipcRenderer.on("imported", (event, arg) => { // arg is urls
+                    arg.map(urlItem => {
+                        if (urlItem != "") {
+                            let where_id_in_url = urlItem.match(/id=(.*?)&/);
+                            let id;
+                            if (where_id_in_url) {
+                                id = where_id_in_url[1]
+                            } else if (!where_id_in_url) {
+                                let idIndex = urlItem.match(/id=(.*?)/).index
+                                id = urlItem.substring(idIndex + 3, urlItem.length)
+                            }
+                            pdDataId.push(id)
+                        }
+                    })
+                })
+            })
+            $(".kaishipanduan").on("click", function () {
+                pdDataId.map(baoid => {
+                    fetch(HOST + '/is-repeat', {
+                        method: 'POST',
+                        headers: new Headers({
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }),
+                        body: new URLSearchParams([
+                            ["baoid", baoid]
+                        ]).toString()
+                    }).then((res) => {
+                        res.text().then((data) => {
+                            let isRepeat = JSON.parse(data).isRepeat;
+                            if (isRepeat) {
+                                let real_data = JSON.parse(data);
+                                let required_data = {
+                                    id: real_data.id,
+                                    baoid: baoid,
+                                    isRepeat: "yes",
+                                    mark: ""
+                                };
+                                addElementOfTable(required_data,
+                                    ".sfcf-table", false, "cf-tr")
+                            } else if (!isRepeat) {
+                                let required_data = {
+                                    id: "",
+                                    baoid: baoid,
+                                    isRepeat: "no",
+                                    mark: ""
+                                };
+                                pdSaveData.push({baoid:required_data.baoid})
+                                addElementOfTable(required_data,
+                                    ".sfcf-table", false, "cf-tr")
+                            }
+                        });
+                    });
+                })
+            })  
+            $(".daochu").on("click", function () {
+                $(".cf-tr").remove() // clear table
+                if (pdSaveData.length == 0) {
+                    ipcRenderer.send("save-file", false);
+                } else if (pdSaveData.length != 0) {
+                    ipcRenderer.send("save-file", pdSaveData);
                 }
             })
 
@@ -643,7 +712,7 @@
                                 baoid: dataItem.baoid,
                                 name: users[dataItem.userdo],
                                 count: dataItem.sc,
-                                type: dataItem.type
+                                type: types[dataItem.type]
                             };
                             saveData.push(required_data);
                             addElementOfTable(required_data,
